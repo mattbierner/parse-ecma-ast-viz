@@ -5,8 +5,7 @@
     <title>parse-ecma ast viz</title>
     <style>
         .content > * {
-            width: 50%;
-            float: left;
+            width: 100%;
             position: relative;
         }
         
@@ -26,8 +25,10 @@
     <div class="content">
         <div class='console'>
             <h2>Input</h2>
-            <textarea rows='20'></textarea>
-            <button>Tokenize</button>
+            <div>
+                <textarea rows='20'></textarea>
+                <button>Tokenize</button>
+            </div>
         </div>
         <div class='output'>
             <h2>Output</h2>
@@ -152,16 +153,16 @@
                             if (d instanceof statement.Statement)
                                 return 'blue';
                             else if (d instanceof expression.Expression)
-                                return 'red';
+                                return 'green';
                             return 'gray';
                         })
                         .style('stroke', function(d){
                             if (d.children && d.children.length) {
-                                return 'green';
+                                return 'red';
                             }
                             return 'black';
-                        }).
-                        style('stroke-width', '2px');
+                        })
+                        .style('stroke-width', '2px');
 
                     nodeEnter.append("svg:text")
                         .attr("dy", 4)
