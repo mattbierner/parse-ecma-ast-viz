@@ -1,0 +1,6 @@
+[submodule "resources/parse-ecma"]
+	path = resources/parse-ecma
+	url = https://github.com/mattbierner/parse-ecma
+[submodule "resources/d3"]
+	path = resources/d3
+	url = git://github.com/mbostock/d3.git
