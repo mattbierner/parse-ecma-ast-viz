@@ -18,6 +18,37 @@
             width: 100%;
             box-sizing: border-box;
         }
+        
+        .node .bg {
+            fill: #D4D9B4;
+            stroke-width: 2px;
+            stroke: rgba(255, 255, 255, .25);
+        }
+        
+        .node.InnerNode .bg {
+            stroke: rgba(0, 0, 0, .5);
+        }
+        
+       .node.InnerNode:hover .bg {
+            opacity: .65;
+        }
+        
+        
+        .node.Statement .bg {
+            fill: #C0974E;
+        }
+        
+        .node.Expression .bg {
+            fill: #7A9FA2;
+        }
+        
+        .node.Identifier .bg {
+            fill: #A7AE61;
+        }
+        
+        .node.Literal .bg {
+            fill: #86575A;
+        }
     </style>
 </head>
 
@@ -52,8 +83,11 @@
             require(['parse/parse',
                 'stream',
                 'ecma/lex/lexer', 'ecma/parse/parser',
-                'ecma/ast/node', 'ecma/ast/statement', 'ecma/ast/expression'],
-            function (parse, stream, lexer, parser, node, statement, expression) {
+                'ecma/ast/node', 'ecma/ast/statement', 'ecma/ast/expression', 'ecma/ast/token'],
+            function (parse,
+                stream,
+                lexer, parser,
+                node, statement, expression, token) {
                 node.Node.prototype.toString = Object.prototype.toString;
                 
                 var w = 600,
@@ -74,7 +108,7 @@
                         children = Object.keys(root)
                             .filter(function(x) {
                                 var val = root[x];
-                                return val && (Array.isArray(val) && val.length) || val instanceof node.Node;
+                                return val && (Array.isArray(val)) || val instanceof node.Node;
                             }).map(function(x) {
                                 return toTree(root[x], x);
                             }, []);
@@ -84,7 +118,7 @@
                                     return false;
                                 }
                                 var val = root[x];
-                                return !((Array.isArray(val) && val.length) || val instanceof node.Node);
+                                return !(Array.isArray(val) || val instanceof node.Node);
                             });
                     }
                     return Object.create(root, {
@@ -117,15 +151,25 @@
                     d.children = d._children;
                     d._children = null;
                   }
-                }
+                };
   
-                // Toggle children on click.
                 var click = function(d) {
                     toggle(d);
                     update(d);
-                }
-
-                function update(source) {
+                };
+            
+                var reset = function(base) {
+                    var nodes = tree.nodes(base);
+                    
+                    vis.selectAll("g.node")
+                        .data(nodes, function(d, i) {
+                            return (d._id = Math.random());
+                        });
+                        
+                    update(root = base);
+                };
+                
+                var update = function(source) {
                     var nodes = tree.nodes(root);
                     
                     nodes.forEach(function(n, i) {
@@ -138,7 +182,21 @@
                         });
 
                     var nodeEnter = node.enter().append("svg:g")
-                        .attr("class", "node")
+                        .attr("class", function(d) {
+                            var classes = ['node'];
+                            if ((d.children && d.children.length) || (d._children && d._children.length))
+                                classes.push('InnerNode');
+                                
+                            if (d instanceof statement.Statement)
+                                classes.push('Statement');
+                            else if (d instanceof expression.Expression)
+                                classes.push('Expression');
+                            else if (d instanceof token.Identifier)
+                                classes.push('Identifier');
+                            else if (d instanceof token.Literal)
+                                classes.push('Literal');
+                            return classes.join(' ');
+                        })
                         .attr("transform", function(d) {
                             return "translate(" + source.y0 + "," + source.x0 + ")";
                         })
@@ -148,21 +206,8 @@
                         .attr("y", -barHeight / 2)
                         .attr("height", barHeight)
                         .attr("width", barWidth)
-                        .on("click", click)
-                        .style('fill', function(d){
-                            if (d instanceof statement.Statement)
-                                return 'blue';
-                            else if (d instanceof expression.Expression)
-                                return 'green';
-                            return 'gray';
-                        })
-                        .style('stroke', function(d){
-                            if (d.children && d.children.length) {
-                                return 'red';
-                            }
-                            return 'black';
-                        })
-                        .style('stroke-width', '2px');
+                        .attr('class', 'bg')
+                        .on("click", click);
 
                     nodeEnter.append("svg:text")
                         .attr("dy", 4)
@@ -180,14 +225,15 @@
                             return "translate(" + d.y + "," + d.x + ")";
                         })
                         .style("opacity", 1);
-
+                    
+                    var max = 0;
                     node.transition()
                         .duration(duration)
                         .attr("transform", function (d) {
+                            max = (d.y > max ? d.y : max);
                             return "translate(" + d.y + "," + d.x + ")";
                         })
-                        .style("opacity", 1)
-                        .select("rect")
+                        .style("opacity", 1);
 
                     node.exit().transition()
                         .duration(duration)
@@ -201,14 +247,16 @@
                         d.x0 = d.x;
                         d.y0 = d.y;
                     });
-                }
+                    
+                    d3.select("svg")
+                        .attr("height", nodes.length * (barHeight + 2) + 30);
+                };
 
                 var lexOut = $('.LexOut');
                 $('button').click(function () {
                     var input = $('textarea').val();
-                    var nodes = lexer.lex(input);
-                    var ast = parser.parseStream(nodes);
-                    update(root = toTree(ast));
+                    var ast = parser.parseStream(lexer.lex(input));
+                    reset(toTree(ast));
                 });
             });
         });
