@@ -33,6 +33,9 @@
             opacity: .65;
         }
         
+        .node.Collapsed text {
+            font-weight: bold;
+        }
         
         .node.Statement .bg {
             fill: #C0974E;
@@ -144,20 +147,24 @@
                     .attr("transform", "translate(20,30)");
                 
                 var toggle = function(d) {
-                  if (d.children) {
-                    d._children = d.children;
-                    d.children = null;
-                  } else {
-                    d.children = d._children;
-                    d._children = null;
-                  }
+                    if (d.children) {
+                        if (d.children.length) {
+                            d3.select(this).classed('Collapsed', true);
+                        }
+                        d._children = d.children;
+                        d.children = null;
+                    } else {
+                        d3.select(this).classed('Collapsed', false);
+                        d.children = d._children;
+                        d._children = null;
+                    }
                 };
-  
+                
                 var click = function(d) {
-                    toggle(d);
+                    toggle.call(this, d);
                     update(d);
                 };
-            
+                
                 var reset = function(base) {
                     var nodes = tree.nodes(base);
                     
@@ -197,17 +204,18 @@
                                 classes.push('Literal');
                             return classes.join(' ');
                         })
-                        .attr("transform", function(d) {
-                            return "translate(" + source.y0 + "," + source.x0 + ")";
-                        })
-                        .style('opacity', 1e-6);
+                        .attr("transform", "translate(" + source.y0 + "," + source.x0 + ")")
+                        .style('opacity', 1e-6)
+                        .on("click", click)
+                        .classed('Collapsed', function(d) {
+                            return d._children;
+                        });
                         
                     nodeEnter.append("svg:rect")
                         .attr("y", -barHeight / 2)
                         .attr("height", barHeight)
                         .attr("width", barWidth)
-                        .attr('class', 'bg')
-                        .on("click", click);
+                        .attr('class', 'bg');
 
                     nodeEnter.append("svg:text")
                         .attr("dy", 4)
@@ -237,9 +245,7 @@
 
                     node.exit().transition()
                         .duration(duration)
-                        .attr("transform", function (d) {
-                            return "translate(" + source.y + "," + source.x + ")";
-                        })
+                        .attr("transform", "translate(" + source.y + "," + source.x + ")")
                         .style("opacity", 1e-6)
                         .remove();
 
