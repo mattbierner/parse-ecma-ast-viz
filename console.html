@@ -19,6 +19,10 @@
             box-sizing: border-box;
         }
         
+        .ParseError {
+            color: red;
+        }
+        
         .node .bg {
             fill: #D4D9B4;
             stroke-width: 2px;
@@ -66,6 +70,7 @@
         </div>
         <div class='output'>
             <h2>Output</h2>
+            <span class="ParseError"></span>
             <div id='parse_out' style='overflow-y: auto;'></div>
         </div>
     </div>
@@ -90,9 +95,8 @@
             function (parse,
                 stream,
                 lexer, parser,
-                node, statement, expression, token) {
-                node.Node.prototype.toString = Object.prototype.toString;
-                
+                node, statement, expression, token)
+            {                
                 var w = 600,
                     h = 10000,
                     i = 0,
@@ -261,7 +265,14 @@
                 var lexOut = $('.LexOut');
                 $('button').click(function () {
                     var input = $('textarea').val();
-                    var ast = parser.parseStream(lexer.lex(input));
+                    var ast;
+                    try {
+                        ast = parser.parseStream(lexer.lex(input));
+                        $('.ParseError').text('');
+                    } catch (e) {
+                        ast = {};
+                        $('.ParseError').text(e);
+                    }
                     reset(toTree(ast));
                 });
             });
