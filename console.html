@@ -91,11 +91,11 @@
             require(['parse/parse',
                 'stream',
                 'ecma/lex/lexer', 'ecma/parse/parser',
-                'ecma/ast/node', 'ecma/ast/statement', 'ecma/ast/expression', 'ecma/ast/token'],
+                'ecma/ast/node', 'ecma/ast/statement', 'ecma/ast/expression', 'ecma/ast/value'],
             function (parse,
                 stream,
                 lexer, parser,
-                node, statement, expression, token)
+                node, statement, expression, value)
             {                
                 var w = 600,
                     h = 10000,
@@ -202,9 +202,9 @@
                                 classes.push('Statement');
                             else if (d instanceof expression.Expression)
                                 classes.push('Expression');
-                            else if (d instanceof token.Identifier)
+                            else if (d instanceof value.Identifier)
                                 classes.push('Identifier');
-                            else if (d instanceof token.Literal)
+                            else if (d instanceof value.Literal)
                                 classes.push('Literal');
                             return classes.join(' ');
                         })
