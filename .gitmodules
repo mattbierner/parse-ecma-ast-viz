@@ -4,3 +4,9 @@
 [submodule "resources/d3"]
 	path = resources/d3
 	url = git://github.com/mbostock/d3.git
+[submodule "resources/stream"]
+	path = resources/stream
+	url = https://github.com/mattbierner/stream.js.git
+[submodule "resources/parse"]
+	path = resources/parse
+	url = https://github.com/mattbierner/parse.js.git

@@ -84,12 +84,12 @@
             paths: {
                 'ecma': 'resources/parse-ecma/lib',
                 parse: 'resources/parse-ecma/dependencies/parse/lib',
-                stream: 'resources/parse-ecma/dependencies/parse/dependencies/stream/lib/stream'
+                stream: 'resources/stream/lib'
             }
         });
         $(function () {
             require(['parse/parse',
-                'stream',
+                'stream/stream',
                 'ecma/lex/lexer', 'ecma/parse/parser',
                 'ecma/ast/node', 'ecma/ast/statement', 'ecma/ast/expression', 'ecma/ast/value'],
             function (parse,
