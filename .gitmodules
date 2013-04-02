@@ -7,3 +7,6 @@
 [submodule "resources/parse"]
 	path = resources/parse
 	url = https://github.com/mattbierner/parse.js.git
+[submodule "resources/nu"]
+	path = resources/nu
+	url = https://github.com/mattbierner/nu.git
