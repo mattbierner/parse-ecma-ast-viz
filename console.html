@@ -84,14 +84,15 @@
             paths: {
                 'ecma': 'resources/parse-ecma/lib',
                 'parse': 'resources/parse/lib',
-                'nu': 'resources/nu/lib'
+                'nu': 'resources/nu/lib',
+                'ecma_ast': 'dependencies/ecma-ast/lib'
             }
         });
         $(function () {
             require(['parse/parse',
                 'nu/stream',
                 'ecma/lex/lexer', 'ecma/parse/parser',
-                'ecma/ast/node', 'ecma/ast/statement', 'ecma/ast/expression', 'ecma/ast/value'],
+                'ecma_ast/node', 'ecma_ast/statement', 'ecma_ast/expression', 'ecma_ast/value'],
             function (parse,
                 stream,
                 lexer, parser,
@@ -267,7 +268,7 @@
                     var input = $('textarea').val();
                     var ast;
                     try {
-                        ast = parser.parseStream(lexer.lex(input));
+                        ast = parser.parseStream(lexer.lexRegExp(input));
                         $('.ParseError').text('');
                     } catch (e) {
                         ast = {};
