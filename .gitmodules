@@ -10,3 +10,6 @@
 [submodule "resources/nu"]
 	path = resources/nu
 	url = https://github.com/mattbierner/nu.git
+[submodule "dependencies/ecma-ast"]
+	path = dependencies/ecma-ast
+	url = git://github.com/mattbierner/ecma-ast.git
